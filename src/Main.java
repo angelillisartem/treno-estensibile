@@ -12,8 +12,12 @@ public class Main {
 
         //
         //Stampare le fermate del treno
-        System.out.print("a che feramata siamo?: ");
-        String tappa = in.next();
+        String tappa = null;
+        for (int i = 0; i < 3; i++) {
+            System.out.print("\nA che feramata siamo?: ");
+            tappa = in.next();
+        }
+
         //Modificare il numero dei vagoni se il numero massimo di cpienza viene superato
         //
 
