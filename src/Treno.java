@@ -1,50 +1,62 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
 public class Treno {
-   private int maxPass;
-   private int maxVagoni;
-   private int passSaliti;
-   private int passScesi;
-   private String tappe;
-    public Treno(int maxPass, int maxVagoni, int passSaliti, int passScesi, String tappe) {
-        this.maxPass = maxPass;
-        this.maxVagoni = maxVagoni;
-        this.passSaliti = passSaliti;
-        this.passScesi = passScesi;
+    private int[] vagoni;
+    private int capienzaK;
+    private String[] tappe;
+    private int tappaAttuale;
+    public Treno(int numeroVagoni, int capienzaVagone, String[] tappe) {
+        vagoni = new int[numeroVagoni];
+        capienzaK = capienzaVagone;
         this.tappe = tappe;
+        tappaAttuale = 0;
     }
-    public void setMaxPass(int maxPass) {
-        this.maxPass = maxPass;
+    public Treno(Treno treno) {
+        this.vagoni = treno.vagoni.clone();
+        this.capienzaK = treno.capienzaK;
+        this.tappe = treno.tappe.clone();
+        this.tappaAttuale = treno.tappaAttuale;
     }
-    public void setMaxVagoni(int maxVagoni) {
-        this.maxVagoni = maxVagoni;
+    public void gestioneTappa(int passeggeriSaliti, int passeggeriScesi) {
+        for(int i = 0; i < vagoni.length; i++){
+            vagoni[i] += passeggeriSaliti;
+            vagoni[i] -= passeggeriScesi;
+            if (vagoni[i] > capienzaK) {
+                int numVagoniNecessari = (int) Math.ceil((double) vagoni[i] / capienzaK);
+                vagoni = Arrays.copyOf(vagoni, vagoni.length + numVagoniNecessari);
+                //riempi i nuovi vagoni con i passeggeri in eccesso
+                int passeggeriRimasti = vagoni[i] - capienzaK;
+                vagoni[i] = capienzaK;
+                for (int j = vagoni.length - numVagoniNecessari; j < vagoni.length; j++) {
+                    vagoni[j] = passeggeriRimasti / (numVagoniNecessari - (j - (vagoni.length - numVagoniNecessari)));
+                }
+            }
+        }
     }
-    public void setPassSaliti(int passSaliti) {
-        this.passSaliti = passSaliti;
+    public void chiediTappa() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("In quale tappa ti trovi? (1-" + tappe.length + ")");
+        tappaAttuale = input.nextInt() - 1;
+        System.out.println("Tappa attuale: " + tappe[tappaAttuale]);
     }
-    public void setPassScesi(int passScesi) {
-        this.passScesi = passScesi;
+    public boolean isFull(){
+        for(int i = 0; i < vagoni.length; i++)
+            if(vagoni[i] < capienzaK)
+                return false;
+        return true;
     }
-    public void setTappe(String tappe) {
-        this.tappe = tappe;
+    public Treno copy() {
+        return new Treno(this);
     }
-    public String getTappe() {
-        return tappe;
-    }
-    public int getMaxVagoni() {
-        return maxVagoni;
-    }
-    public int getMaxPass() {
-        return maxPass;
-    }
-    public int getPassSaliti() {
-        return passSaliti;
-    }
-    public int getPassScesi() {
-        return passScesi;
-    }
-    public void stampa() {
-        System.out.print("\nIl treno e' alla tappa: " + getTappe());
-        System.out.print("\nMassimo passegeri sul treno: " + getMaxPass());
-        System.out.print("\nPassegeri saliti sul treno: " + getPassSaliti());
-        System.out.print("\nPassegeri scesi dal treno: " + getPassScesi());
+    public void stampaInfo() {
+        System.out.println("Informazioni sul treno:");
+        System.out.println("Numero di vagoni: " + vagoni.length);
+        System.out.println("Capienza per vagone: " + capienzaK);
+        System.out.println("Passeggeri per vagone: ");
+        for (int i = 0; i < vagoni.length; i++) {
+            System.out.println("Vagone " + (i + 1) + ": " + vagoni[i]);
+        }
+        System.out.println("Tappa attuale: " + tappe[tappaAttuale]);
     }
 }
